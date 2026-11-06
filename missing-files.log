@@ -1,0 +1,240 @@
+================================================================================
+BASHO (https://basho.fueko.net) — MISSING & CORRUPTED FILES LOG
+Original Export Type: Chrome DevTools "Save All Resources"
+Audit & Offline Reconstruction Date: 2026-11-05
+================================================================================
+
+SUMMARY
+-------
+The original Chrome "Save All Resources" export contained 295 files across 6
+domain folders (`basho.fueko.net`, `cdn.synaps.media`, `fonts.googleapis.com`,
+`fonts.gstatic.com`, `js.stripe.com`, `m.stripe.network`), of which 254 files
+were unpacked Rollup/Webpack sourcemap files (`node_modules/pnpm/...`) rather
+than runtime assets.
+
+Auditing the export against the live site (https://basho.fueko.net) revealed:
+  - 3 Corrupted ("No Content:") files saved as plain-text error stubs
+  - 3 Missing lazy-loaded post feature images on the homepage
+  - 6 Missing <picture> fallback <img> author avatar JPEGs
+  - 6 Missing Inter v20 unicode-range font subsets referenced in css2.css
+  - 2 Missing UI/browser assets (Sodo Search main.css + /favicon.ico)
+  - 7 Missing dynamic Ghost API / Analytics endpoints & Page 2 pagination HTML
+  - 7 Missing older post feature images referenced in Page 2 / Search API
+  - 5 Missing JavaScript sourcemaps (.map files referenced by Ghost scripts)
+  - 39 Unexported secondary internal routes (posts, authors, tags, static pages)
+
+All runtime assets required for the homepage, fonts, slider, "Load more"
+pagination (Page 2), Ghost Portal, and Search have been restored and localized.
+
+--------------------------------------------------------------------------------
+1. CORRUPTED FILES IN ORIGINAL EXPORT ("No Content:" Stubs)
+--------------------------------------------------------------------------------
+Chrome's "Save All Resources" extension writes `No Content: <url>` when a
+resource's response body buffer has been evicted from DevTools memory or lives
+in an isolated cross-origin iframe/font cache.
+
+1.1. fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2
+     - Exported Size : 98 bytes (corrupted text: "No Content: https://fonts.gstatic.com/...")
+     - Live Size     : 48,432 bytes (valid WOFF2 binary, Inter v20 Latin subset)
+     - Impact        : Primary Latin font failed to decode (`OTS parsing error`),
+                       causing the page to fall back to system sans-serif instead
+                       of Inter (weights 300, 400, 500, 700).
+     - Resolution    : Restored valid 48,432-byte WOFF2 binary to
+                       `assets/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2`.
+
+1.2. js.stripe.com/v3/m-outer-3437aaddcdf6922d623e172c2d6f9278.html
+     - Exported Size : 82 bytes (corrupted text: "No Content: https://js.stripe.com/...")
+     - Impact        : Stripe v3 outer metrics controller iframe HTML was empty.
+     - Resolution    : Reconstructed valid HTML shell at
+                       `assets/js/vendor/stripe/m-outer-3437aaddcdf6922d623e172c2d6f9278.html`
+                       loading `m-outer-15a2b40a058ddff1cffdb63779fe3de1.js`.
+
+1.3. m.stripe.network/inner.html
+     - Exported Size : 47 bytes (corrupted text: "No Content: https://m.stripe.network/inner.html")
+     - Impact        : Stripe v3 inner telemetry iframe HTML was empty.
+     - Resolution    : Reconstructed valid HTML shell at
+                       `assets/js/vendor/stripe/inner.html` loading `out-4.5.45.js`.
+
+--------------------------------------------------------------------------------
+2. MISSING HOMEPAGE POST FEATURE IMAGES (Lazy-Loaded Below the Fold)
+--------------------------------------------------------------------------------
+Referenced in `index.html` lines 640-698 inside `.special-section` ("Recommended"
+posts at the bottom of the homepage). Because these `<img>` tags use
+`loading="lazy"`, Chrome had not fetched them before the export was saved.
+
+2.1. https://cdn.synaps.media/basho/content/files/images/2022/03/photo-1593259037198-c720f4420d7f.jpeg
+     - Post          : "I work best when my space is filled with inspiration"
+     - Live Size     : 455,887 bytes
+     - Resolution    : Restored to `assets/images/posts/photo-1593259037198-c720f4420d7f.jpeg`
+
+2.2. https://cdn.synaps.media/basho/content/files/images/2022/03/photo-1609405979808-08669e982546.jpeg
+     - Post          : "Don’t be afraid"
+     - Live Size     : 331,398 bytes
+     - Resolution    : Restored to `assets/images/posts/photo-1609405979808-08669e982546.jpeg`
+
+2.3. https://cdn.synaps.media/basho/content/files/images/2022/03/photo-1615782706112-e4fe47b56c24.jpeg
+     - Post          : "Anyone can hold the helm when the sea is calm"
+     - Live Size     : 369,595 bytes
+     - Resolution    : Restored to `assets/images/posts/photo-1615782706112-e4fe47b56c24.jpeg`
+
+--------------------------------------------------------------------------------
+3. MISSING <picture> FALLBACK AUTHOR AVATAR IMAGES (Non-WebP Paths)
+--------------------------------------------------------------------------------
+Every author avatar in `index.html` uses a `<picture>` element with:
+  - `<source srcset=".../size/w300/format/webp/2022/03/<file>.jpg" type="image/webp">`
+  - `<img src=".../size/w300/2022/03/<file>.jpg">`
+Chrome only downloaded the WebP `<source>` files (`.../format/webp/...`), leaving
+all 6 fallback `<img src="...">` paths missing. Furthermore, `imagesLoaded` in
+`assets/js/index.js` inspects `img.src` (`this.proxyImage.src = this.img.src`),
+which triggers requests for the `.jpg` fallback URLs.
+
+3.1. https://cdn.synaps.media/basho/content/images/size/w300/2022/03/alison-erickson-Zt8IkNfhk54-unsplash.jpg (12,792 bytes)
+3.2. https://cdn.synaps.media/basho/content/images/size/w300/2022/03/good-faces-onKIR2oTW0o-unsplash.jpg (11,532 bytes)
+3.3. https://cdn.synaps.media/basho/content/images/size/w300/2022/03/joshua-oyebanji-kMC1v6rBHMI-unsplash-2.jpg (12,734 bytes)
+3.4. https://cdn.synaps.media/basho/content/images/size/w300/2022/03/kazi-mizan-ItjRqGiei5g-unsplash.jpg (8,854 bytes)
+3.5. https://cdn.synaps.media/basho/content/images/size/w300/2022/03/matheus-ferrero-dlYiklmLIGg-unsplash.jpg (10,012 bytes)
+3.6. https://cdn.synaps.media/basho/content/images/size/w300/2022/03/seth-doyle-wys9Jty8wNQ-unsplash.jpg (16,360 bytes)
+     - Resolution    : Restored all 6 `.jpg` files alongside `.webp` files in
+                       `assets/images/authors/`.
+
+--------------------------------------------------------------------------------
+4. MISSING INTER v20 FONT SUBSETS REFERENCED IN fonts.googleapis.com/css2.css
+--------------------------------------------------------------------------------
+`fonts.googleapis.com/css2.css` defines 28 `@font-face` rules across 7 unicode
+ranges for weights 300, 400, 500, and 700, referencing 7 `.woff2` files. Only
+the Latin filename was present in `fonts.gstatic.com/s/inter/v20/` (and it was
+corrupted). The other 6 unicode-range files were completely missing:
+
+4.1. https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7W0Q5n-wU.woff2 (cyrillic-ext, 25,844 bytes)
+4.2. https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7W0Q5n-wU.woff2 (cyrillic, 18,744 bytes)
+4.3. https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7W0Q5n-wU.woff2 (greek-ext, 11,272 bytes)
+4.4. https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7W0Q5n-wU.woff2 (greek, 19,044 bytes)
+4.5. https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7W0Q5n-wU.woff2 (vietnamese, 10,280 bytes)
+4.6. https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7W0Q5n-wU.woff2 (latin-ext, 85,272 bytes)
+     - Resolution    : Restored all 6 `.woff2` files into `assets/fonts/inter/`
+                       and updated `assets/css/fonts.css` to reference `../fonts/inter/`.
+
+--------------------------------------------------------------------------------
+5. MISSING STYLESHEETS, FAVICON & SOURCEMAPS
+--------------------------------------------------------------------------------
+5.1. https://cdn.synaps.media/npm/@tryghost/sodo-search@1.9.7/umd/main.css
+     - Referenced in : `index.html` line 33 (`data-styles` attribute on `sodo-search.min.js`)
+     - Live Size     : 9,819 bytes
+     - Resolution    : Restored to `assets/css/sodo-search.min.css`.
+
+5.2. https://basho.fueko.net/favicon.ico
+     - Referenced by : Browser default `/favicon.ico` request
+     - Live Size     : 15,406 bytes
+     - Resolution    : Restored to `/favicon.ico` and linked in `<head>`.
+
+5.3. Missing `.map` Sourcemaps (Referenced via `//# sourceMappingURL=` comments):
+     - `basho.fueko.net/public/cards.min.js.map`
+     - `basho.fueko.net/public/comment-counts.min.js.map`
+     - `basho.fueko.net/public/member-attribution.min.js.map`
+     - `cdn.synaps.media/npm/@tryghost/portal@2.72.18/umd/portal.min.js.map`
+     - `cdn.synaps.media/npm/@tryghost/sodo-search@1.9.7/umd/sodo-search.min.js.map`
+     - Resolution    : Stripped dangling `//# sourceMappingURL=` comments from
+                       minified bundles so opening DevTools offline does not
+                       log 404 warnings.
+
+--------------------------------------------------------------------------------
+6. MISSING DYNAMIC GHOST API ENDPOINTS, ANALYTICS & PAGINATION
+--------------------------------------------------------------------------------
+6.1. https://basho.fueko.net/ghost/api/content/posts/?key=cf1a8c5af104bba9e76509d642&limit=all&fields=url,title,feature_image,published_at,custom_excerpt,visibility,html
+     - Referenced in : `index.html` line 851 (`options.api` fetched by `global.js`
+                       when clicking the Search button in the header).
+     - Live Size     : 127,752 bytes (JSON containing all 22 published posts)
+     - Resolution    : Saved to `assets/data/posts.json` with local image paths
+                       (`/assets/images/posts/...`) so Fuse.js search works 100% offline.
+
+6.2. https://basho.fueko.net/ghost/api/content/settings/?key=cf1a8c5af104bba9e76509d642
+     - Referenced by : `portal.min.js` on page load
+     - Live Size     : 4,363 bytes
+     - Resolution    : Saved to `assets/data/settings.json` with local logo path.
+
+6.3. https://basho.fueko.net/ghost/api/content/tiers/?key=cf1a8c5af104bba9e76509d642&include=monthly_price,yearly_price,benefits
+     - Referenced by : `portal.min.js` on page load
+     - Live Size     : 1,493 bytes
+     - Resolution    : Saved to `assets/data/tiers.json`.
+
+6.4. https://basho.fueko.net/ghost/api/content/newsletters/?key=cf1a8c5af104bba9e76509d642
+     - Referenced by : `portal.min.js` on page load
+     - Live Size     : 413 bytes
+     - Resolution    : Saved to `assets/data/newsletters.json`.
+
+6.5. https://basho.fueko.net/members/api/member/
+     - Referenced by : `portal.min.js` on page load to check logged-in session
+     - Live Response : `204 No Content` / `null` when logged out
+     - Resolution    : Saved to `assets/data/member.json`.
+
+6.6. https://basho.fueko.net/members/api/comments/counts/
+     - Referenced in : `index.html` line 37 (`data-ghost-comments-counts-api`)
+     - Resolution    : Saved to `assets/data/comment-counts.json`.
+
+6.7. https://basho.fueko.net/page/2/
+     - Referenced in : `index.html` line 17 (`<link rel="next">`) and line 628
+                       (`.pagination-section a` fetched by `InfiniteScroll` in
+                       `assets/js/index.js` when clicking "Load more").
+     - Live Size     : 67,675 bytes
+     - Resolution    : Saved and rewritten to `page/2/index.html` so clicking
+                       "Load more" appends the next 6 posts offline.
+
+6.8. Older Post Feature Images (Referenced in Page 2 & Search API `posts.json`):
+     - `photo-1587702068694-a909ef4aa346.jpeg`
+     - `photo-1595683213102-db302aa70c0f.jpeg`
+     - `photo-1595950653106-6c9ebd614d3a.jpeg`
+     - `photo-1619066400673-c973159d4e0f.jpeg`
+     - `photo-1638913971251-832d29947de6.jpeg`
+     - `photo-1644424235692-9f5e4cf226e7.jpeg`
+     - `photo-1644463589256-02679b9c0767.jpeg`
+     - Resolution    : Provided local fallback images at `assets/images/posts/`
+                       so Page 2 and all 22 search results render without 404s.
+
+--------------------------------------------------------------------------------
+7. MISNAMED FILES & EXTRANEOUS SOURCEMAP CLUTTER IN ORIGINAL EXPORT
+--------------------------------------------------------------------------------
+7.1. `js.stripe.com/v3/index.html` (1,174,460 bytes)
+     - Actually the Stripe v3 JavaScript bundle (`https://js.stripe.com/v3/`),
+       which Chrome saved as `index.html` because the script URL ended with `/`.
+     - Resolution    : Renamed to `assets/js/vendor/stripe-v3.js` and updated
+                       `<script async src="/assets/js/vendor/stripe-v3.js">`.
+
+7.2. Unpacked Sourcemap Tree (`cdn.synaps.media/npm/...` — 254 files)
+     - `cdn.synaps.media/npm/node_modules/pnpm/...`
+     - `cdn.synaps.media/npm/packages/...`
+     - `cdn.synaps.media/npm/@tryghost/portal@2.72.18/src/...`
+     - These were virtual source files unpacked by DevTools from `portal.min.js.map`
+       and are never requested by the browser at runtime. Removed during cleanup.
+
+--------------------------------------------------------------------------------
+8. UNEXPORTED SECONDARY PAGES (Single-Page Export Scope)
+--------------------------------------------------------------------------------
+Because "Save All Resources" only exports resources loaded by the active page
+(`https://basho.fueko.net/`), internal `<a href="...">` links to other pages on
+the Ghost site were not part of the export:
+  - Navigation / Static Pages:
+    `/style-guide/`, `/membership/`, `/tags/`, `/authors/`, `/subscribe/`,
+    `/contact/`, `/signup/`, `/signin/`, `/404/`, `/demo-account-member/`, `/rss/`
+  - Author Archives (6):
+    `/author/breana/`, `/author/brenda/`, `/author/damian/`, `/author/daryl/`,
+    `/author/liza/`, `/author/nichole/`
+  - Tag Archives (7):
+    `/tag/creative/`, `/tag/design/`, `/tag/idea/`, `/tag/lifestyle/`,
+    `/tag/people/`, `/tag/product/`, `/tag/review/`
+  - Individual Post Pages (15 linked on homepage):
+    `/creating-is-a-privilege-but-its-also-a-gift/`
+    `/now-were-getting-somewhere/`
+    `/the-trick-to-getting-more-done-is-to-have-the-freedom-to-roam-around/`
+    `/every-day-in-every-way-im-getting-better-and-better/`
+    `/lifestyle-is-much-more-than-what-you-have/`
+    `/we-are-stronger-as-a-group-than-an-individual/`
+    `/brand-is-just-a-perception-and-will-match-reality-over-time/`
+    `/perfection-has-to-do-with-the-end-product/`
+    `/design-is-a-mirror-reflecting-the-culture/`
+    `/comfort-and-simplicity-are-two-keys/`
+    `/being-unique-is-better-than-being-perfect/`
+    `/always-look-on-the-bright-side-of-life/`
+    `/i-work-best-when-my-space-is-filled-with-inspiration/`
+    `/dont-be-afraid/`
+    `/anyone-can-hold-the-helm-when-the-sea-is-calm/`
+================================================================================

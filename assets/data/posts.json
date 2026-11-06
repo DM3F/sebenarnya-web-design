@@ -1,0 +1,76 @@
+{
+  "posts": [
+    {
+      "id": "sebenarnya-sample-01",
+      "title": "Checking viral messages about public counter operating hours",
+      "slug": "checking-viral-messages-public-counter-hours",
+      "feature_image": "/assets/images/posts/sebenarnya-fc-kopitiam.jpg",
+      "featured": true,
+      "visibility": "public",
+      "published_at": "2026-03-18T09:00:00.000+08:00",
+      "custom_excerpt": "An example showing how a widely forwarded message about counter schedules is reviewed alongside official public information.",
+      "html": "<p>Illustrating how Sebenarnya.my presents a fact-check card for forwarded messages about public counter schedules.</p>",
+      "url": "/check-fact/"
+    },
+    {
+      "id": "sebenarnya-sample-02",
+      "title": "Reviewing claims on unverified aid registration links shared in chat groups",
+      "slug": "reviewing-claims-unverified-aid-registration-links",
+      "feature_image": "/assets/images/posts/sebenarnya-fc-service-desk.jpg",
+      "featured": true,
+      "visibility": "public",
+      "published_at": "2026-03-16T10:30:00.000+08:00",
+      "custom_excerpt": "Illustrates how suspicious shortlinks and lookalike forms circulating in messaging apps are checked.",
+      "html": "<p>Illustrating how suspicious shortlinks and lookalike forms circulating in messaging apps are checked.</p>",
+      "url": "/check-fact/"
+    },
+    {
+      "id": "sebenarnya-sample-03",
+      "title": "Clarifying a viral screenshot about digital utility portal maintenance",
+      "slug": "clarifying-viral-screenshot-digital-utility-portal",
+      "feature_image": "/assets/images/posts/sebenarnya-fc-community-lounge.jpg",
+      "featured": true,
+      "visibility": "public",
+      "published_at": "2026-03-14T14:15:00.000+08:00",
+      "custom_excerpt": "Demonstrates how older screenshots recirculated without dates are compared with current service notices.",
+      "html": "<p>Demonstrating how older screenshots recirculated without dates are compared with current service notices.</p>",
+      "url": "/check-fact/"
+    },
+    {
+      "id": "sebenarnya-sample-04",
+      "title": "How to verify a viral message in three simple steps before forwarding it",
+      "slug": "how-to-verify-viral-message-three-simple-steps",
+      "feature_image": "/assets/images/posts/sebenarnya-fc-phone-sharing.jpg",
+      "featured": false,
+      "visibility": "public",
+      "published_at": "2026-03-19T08:45:00.000+08:00",
+      "custom_excerpt": "Before sharing a forwarded message or screenshot in family and neighbourhood chat groups, pause to check the original source, date, and whether an official clarification has been published on Sebenarnya.my.",
+      "html": "<p>Before sharing a forwarded message or screenshot in family and neighbourhood chat groups, pause to check the original source, date, and whether an official clarification has been published on Sebenarnya.my.</p>",
+      "url": "/check-fact/"
+    },
+    {
+      "id": "sebenarnya-sample-05",
+      "title": "Explore information and ask questions with AIFA",
+      "slug": "explore-information-with-aifa",
+      "feature_image": "/assets/images/posts/sebenarnya-fc-cafe-talk.jpg",
+      "featured": false,
+      "visibility": "public",
+      "published_at": "2026-03-17T11:20:00.000+08:00",
+      "custom_excerpt": "Ask questions and explore published resources with the AIFA AI assistant. AIFA helps users understand information and is not the final fact-checking authority on whether a claim is true.",
+      "html": "<p>Ask questions and explore published resources with the AIFA AI assistant. AIFA helps users understand information and is not the final fact-checking authority on whether a claim is true.</p>",
+      "url": "/aifa/"
+    },
+    {
+      "id": "sebenarnya-sample-06",
+      "title": "Unsure about something you’ve seen? Submit a claim for review",
+      "slug": "submit-a-claim-for-review",
+      "feature_image": "/assets/images/posts/sebenarnya-fc-digital-desk.jpg",
+      "featured": false,
+      "visibility": "public",
+      "published_at": "2026-03-15T16:00:00.000+08:00",
+      "custom_excerpt": "Share a viral message, link, or question with Sebenarnya.my. Submissions may be reviewed by the relevant team or agency before an approved response is published.",
+      "html": "<p>Share a viral message, link, or question with Sebenarnya.my. Submissions may be reviewed by the relevant team or agency before an approved response is published.</p>",
+      "url": "/check-fact/"
+    }
+  ]
+}
